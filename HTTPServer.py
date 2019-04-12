@@ -5,6 +5,7 @@ import threading
 import socket
 import sys
 import json
+import re
 
 
 class StaticFileServer(object):
@@ -30,31 +31,110 @@ class StaticFileServer(object):
         # 处理客户端请求函数
         client_address = address
         while True:
-            request = client_socket.recv(1024*1024*5)
-            if not request:
+            request_original = client_socket.recv(1024*10*1024)
+            if not request_original:
                 # 请求为空,退出线程
                 print(f"客户端{client_address}已下线")
                 break
-            # 分割请求
-            print(request)
-            request = request.decode("utf-8")
-            request_split_list = request.split(" ", 2)
-            # 判断请求路径是否为空，为空则返回首页
-            if "GET" in request_split_list[0]:
+            # 原始请求分割
+            request_original_list = request_original.split(b'\r\n\r\n')
+            # 请求行以及请求头
+            print(request_original_list)
+            request = request_original_list[0].decode("utf-8")
+            # 判断是post请求还是get请求
+            if "GET" in request:
+                # 分割请求
+                request_split_list = request.split(" ", 2)
+                # 得到请求路劲并处理请求，并返回响应体
                 response = self.handle_get(request_split_list[1])
                 client_socket.send(response)
                 client_socket.close()
                 break
             else:
-                # 获得post请求体
-                post_request_body = self.get_post_request_body(request)
-                # 解析json为字典
-                post_request_body_dic = json.loads(post_request_body)
-                # 处理post请求，并返回响应体
-                response = self.handle_post(post_request_body_dic)
-                client_socket.send(response)
-                client_socket.close()
-                break
+                # 判断是否为上传文件！
+                if "form-data" in request:
+                    # restr = (re.search('boundary=(.*)', request)).group(1)
+                    if len(request_original_list) > 2:
+                        request_original_filedata_list = request_original_list[2].split(b'\r\n')
+                    else:
+                        data = client_socket.recv(1024)
+                        break
+                    # 获得文件名
+                    filename = self.get_filename(request_original_list)
+                    # restr_tmp = request_original_filedata_list[1].decode("utf-8")
+                    # print(restr_tmp)
+                    # print(restr in restr_tmp)
+                    if b'form-data' in request_original_filedata_list[len(request_original_filedata_list)-1]:
+                        self.save_file_data(request_original_filedata_list[0], "/home/yu/Desktop", filename)
+                        print("数据一次性接收完毕")
+                        break
+                    else:
+                        print("数据未接收完毕，开始循环接收！")
+                        file_data_tmp = request_original_filedata_list[0]
+                        while True:
+                            # 第一次未将数据发完，继续循环接收并判断尾包
+                            file_data = client_socket.recv(1024*1024*10)
+                            print(file_data)
+                            if b'form-data' not in file_data:
+                                # 数据非尾包进行缓存
+                                file_data_tmp += file_data
+                            else:
+                                # 接收数据为尾包.将tmp中数据保存
+
+                                data = self.getdata4tmp(file_data_tmp)
+                                self.save_file_data(data, "/home/yu/Desktop", filename, "a")
+                                break
+                            # 如果缓存数据大于10M则存储缓存中数据并清空
+                            if len(file_data_tmp) > (1024*1024*10):
+                                self.save_file_data(file_data_tmp, "/home/yu/Desktop", filename, "a")
+                                file_data_tmp = b''
+                            if not file_data:
+                                break
+
+                    client_socket.close()
+                    break
+                else:
+                    # 获得post请求体
+                    post_request_body = request_original_list[1].decode("utf-8")
+                    # 解析json为字典
+                    post_request_body_dic = json.loads(post_request_body)
+                    # 处理post请求，并返回响应体
+                    response = self.handle_post(post_request_body_dic)
+                    client_socket.send(response)
+                    client_socket.close()
+                    break
+
+    @staticmethod
+    def getdata4tmp(tmp):
+        tmp_data_list = tmp.split(b"client_socket.close()")
+        return tmp_data_list[0]
+    # 获得文件
+    @staticmethod
+    def get_filename(request_original_list):
+        # 解码含有名字信息的请求
+        str = request_original_list[1].decode("utf-8")
+        # 正则匹配文件名
+        filename = re.search("filename=\"(.*)\"\s", str)
+        # 返回文件名.并且去掉文件名中的空格
+        return ''.join(filename.group(1).split())
+
+    # 存储文件数据
+    @staticmethod
+    def save_file_data(data, path, file_name, mode=""):
+        """
+        :param data: 写入的数据
+        :param path: 写入的路径
+        :param file_name: 文件名
+        :param mode: 模式[a追加模式]
+        :return: None
+        """
+        if mode == "":
+            if not os.path.exists(path+"/"+file_name):
+                with open(path+"/"+file_name, "wb") as file:
+                    file.write(data)
+        elif mode == "a":
+            with open(path + "/" + file_name, "ab") as file:
+                file.write(data)
 
     # 获得请求体
     @staticmethod

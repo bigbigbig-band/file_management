@@ -299,36 +299,6 @@
                         break
                 }
             });// 键盘事件
-            $(document).on("change", ".uploading", function (e) {
-                var $Fileinfo = e.currentTarget.files[0]
-                // console.log($Fileinfo)
-                var $Filereader = new FileReader()
-                var $file_size = $Fileinfo.size
-                var $file_name = $Fileinfo.name
-                // var fd = new FormData(document.getElementById("fd"))
-                console.log($Fileinfo)
-                if ($Fileinfo.size >(1024*1024*50)){
-                    console.log("文件大于50M")
-                }else {
-                    $Filereader.readAsBinaryString($Fileinfo)
-                    $Filereader.onload = function (result) {
-                        var fd =new FormData($Fileinfo)
-                        console.log(this.result)
-                        // var blob = new Blob([this.result])
-                        // fd.append('file', blob)
-                        // fd.append('filename', $file_name)
-                        var Uint = new Uint16Array(this.result)
-                        // var file_list = []
-                        // for (index in Uint){
-                        //      file_list.push(Uint[index])
-                        //  }
-                        var file_info = {"path_this":path_this,"file_size":$file_size, "package":[1, 1], "file_name":$file_name}
-                        ajax_uploading("uploading",file_info , this.result)
-                        // console.log(file_list)
-                    }
-                }
-
-            })// 文件上传事件
 
             // 设置文件显示
             function set_filepath(path_list, path_isdir) {
@@ -520,10 +490,11 @@
                         </div>
                         <hr>
                         <div >
-                            <form id="fd">
-                                <b>上传文件</b>
-                                <input type="file" class="uploading" ></input>
+                             <b>上传文件</b>
+                            <form action="http://192.168.16.129:9999" target="" class="upload" method="post" enctype="multipart/form-data">
+                                <input type="file" class="uploading" value="选择文件" name="file"></input>
                                 <br>
+                                <input type="submit" class="uploading" value="上传文件" name="submit"></input>
                             </form>
                         </div>
                     </div>
