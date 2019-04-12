@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="9a2a8156-87c6-4032-89e8-6363e4044b5b" name="Default Changelist" comment="" />
+    <list default="true" id="9a2a8156-87c6-4032-89e8-6363e4044b5b" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/HTTPServer.py" beforeDir="false" afterPath="$PROJECT_DIR$/HTTPServer.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -17,8 +19,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/HTTPServer.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2916">
-              <caret line="108" column="57" selection-start-line="108" selection-start-column="57" selection-end-line="108" selection-end-column="57" />
+            <state relative-caret-position="4455">
+              <caret line="198" column="64" selection-start-line="198" selection-start-column="64" selection-end-line="198" selection-end-column="64" />
               <folding>
                 <element signature="e#21#30#0" expanded="true" />
                 <element signature="e#5132#6091#0" />
@@ -126,6 +128,9 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
@@ -150,6 +155,7 @@
     <option name="width" value="809" />
     <option name="height" value="814" />
   </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
@@ -269,12 +275,12 @@
       <workItem from="1554368544447" duration="60784000" />
       <workItem from="1554694185816" duration="55123000" />
       <workItem from="1554884956219" duration="2177000" />
-      <workItem from="1554892792809" duration="43227000" />
+      <workItem from="1554892792809" duration="43910000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="213040000" />
+    <option name="totallyTimeSpent" value="213723000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -303,7 +309,7 @@
       <window_info anchor="bottom" id="Version Control" order="8" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.5013866" side_tool="true" weight="0.26666668" />
-      <window_info anchor="bottom" id="Terminal" order="11" sideWeight="0.49861342" visible="true" weight="0.38639456" />
+      <window_info anchor="bottom" id="Terminal" order="11" sideWeight="0.49861342" visible="true" weight="0.38744885" />
       <window_info anchor="bottom" id="Python Console" order="12" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -421,8 +427,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/HTTPServer.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2916">
-          <caret line="108" column="57" selection-start-line="108" selection-start-column="57" selection-end-line="108" selection-end-column="57" />
+        <state relative-caret-position="4455">
+          <caret line="198" column="64" selection-start-line="198" selection-start-column="64" selection-end-line="198" selection-end-column="64" />
           <folding>
             <element signature="e#21#30#0" expanded="true" />
             <element signature="e#5132#6091#0" />

@@ -197,15 +197,6 @@ class StaticFileServer(object):
                     response_body = json.dumps({"new_dir_false": -2})
                 else:
                     response_body = json.dumps(["new_dir_true"])
-
-        elif request_body_dic["command"] == "uploading":
-            str1 = request_body_dic["file_bin"]
-            print(str1)
-            # for code in request_body_dic["file_bin"]:
-            #     str_bin += hex(int(code))
-            # file = os.open(request_body_dic["file_info"]["path_this"]+"/"+request_body_dic["file_info"]["file_name"], os.O_WRONLY|os.O_CREAT)
-
-
         # 响应行
         response_line = "HTTP/1.1 200 OK\r\n"
         # 响应头
