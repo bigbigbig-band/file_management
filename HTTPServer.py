@@ -6,7 +6,7 @@ import socket
 import sys
 import json
 import re
-
+from urllib import parse
 
 class StaticFileServer(object):
     def __init__(self, port):
@@ -46,14 +46,14 @@ class StaticFileServer(object):
                 # 分割请求
                 request_split_list = request.split(" ", 2)
                 # 得到请求路劲并处理请求，并返回响应体
-                response = self.handle_get(request_split_list[1])
+                response = self.handle_get(parse.unquote(request_split_list[1]))
                 client_socket.send(response)
                 client_socket.close()
                 break
             else:
                 # 判断是否为上传文件！
                 if "form-data" in request:
-                    # restr = (re.search('boundary=(.*)', request)).group(1)
+                    # 判断请求是否有效
                     if len(request_original_list) > 2:
                         request_original_filedata_list = request_original_list[2].split(b'\r\n')
                     else:
@@ -61,33 +61,33 @@ class StaticFileServer(object):
                         break
                     # 获得文件名
                     filename = self.get_filename(request_original_list)
-                    # restr_tmp = request_original_filedata_list[1].decode("utf-8")
-                    # print(restr_tmp)
-                    # print(restr in restr_tmp)
-                    if b'form-data' in request_original_filedata_list[len(request_original_filedata_list)-1]:
+                    # 获得数据分割符
+                    last_data_flag, split_symbol = self.get_split_symbol(request_original_list)
+                    print(request_original_list[len(request_original_list)-1])
+                    print(last_data_flag in request_original_list[len(request_original_list)-1])
+                    if last_data_flag in request_original_list[len(request_original_list)-1]:
                         self.save_file_data(request_original_filedata_list[0], "/home/yu/Desktop", filename)
                         print("数据一次性接收完毕")
-                        break
                     else:
                         print("数据未接收完毕，开始循环接收！")
-                        file_data_tmp = request_original_filedata_list[0]
+                        file_data_tmp = request_original_list[len(request_original_list)-1]
                         while True:
                             # 第一次未将数据发完，继续循环接收并判断尾包
                             file_data = client_socket.recv(1024*1024*10)
-                            print(file_data)
-                            if b'form-data' not in file_data:
+                            if last_data_flag not in file_data:
                                 # 数据非尾包进行缓存
                                 file_data_tmp += file_data
                             else:
                                 # 接收数据为尾包.将tmp中数据保存
-
-                                data = self.getdata4tmp(file_data_tmp)
+                                data = file_data_tmp + self.getdata4lastdata(file_data, split_symbol)
                                 self.save_file_data(data, "/home/yu/Desktop", filename, "a")
                                 break
+
                             # 如果缓存数据大于10M则存储缓存中数据并清空
-                            if len(file_data_tmp) > (1024*1024*10):
+                            if len(file_data_tmp) > (1024*1024*100):
                                 self.save_file_data(file_data_tmp, "/home/yu/Desktop", filename, "a")
                                 file_data_tmp = b''
+
                             if not file_data:
                                 break
 
@@ -105,9 +105,18 @@ class StaticFileServer(object):
                     break
 
     @staticmethod
-    def getdata4tmp(tmp):
-        tmp_data_list = tmp.split(b"client_socket.close()")
+    def get_split_symbol(request_original_list):
+        str = request_original_list[0].decode()
+        # 正则匹配分割符
+        split_symbol = re.search("boundary=(.*)(\s)", str)
+        split_symbol = split_symbol.group(1)[:-1]
+        return (b'\r\n--'+split_symbol.encode()+b'--\r\n', b'\r\n--'+split_symbol.encode()+b'\r\n')
+
+    @staticmethod
+    def getdata4lastdata(tmp, split_symbol):
+        tmp_data_list = tmp.split(split_symbol)
         return tmp_data_list[0]
+
     # 获得文件
     @staticmethod
     def get_filename(request_original_list):
